@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=CodepoVision
-Exec=/usr/bin/qmlscene $@ /usr/share/CodepoVision/CodepoVision.qml
-Icon=qmlscene
-Terminal=false
-Type=Application
-X-Ubuntu-Touch=true
