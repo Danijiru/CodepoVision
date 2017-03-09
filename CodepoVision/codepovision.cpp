@@ -14,7 +14,7 @@ CodepoVision::CodepoVision(QWidget *parent) :
     QWidget::showFullScreen();
     QWidget::showMaximized();
 
-    connect(ui->actionImporter_une_image, &QAction::triggered, this, &CodepoVision::on_pushButton_clicked);
+    //connect(ui->actionImporter_une_image, &QAction::triggered, this, &CodepoVision::on_pushButton_clicked);
 
 }
 
@@ -23,20 +23,39 @@ CodepoVision::~CodepoVision()
     delete ui;
 }
 
-void CodepoVision::on_pushButton_clicked()
+void CodepoVision::on_actionImporter_une_image_triggered()
 {
-    //ProcessWindow *newProcessWindow = new ProcessWindow;
-    QString newDocument = QFileDialog::getOpenFileName();
-    //if (newDocument.isEmpty())	delete newProcessWindow;
-    //else
-    //{
-    QImage *newImg = new QImage;
-    newImg->load(newDocument);
-    //newProcessWindow->getUi().document->setPixmap(QPixmap::fromImage(*newImg));
-    ui->media->setPixmap(QPixmap::fromImage(*newImg));
-    //ui.mdiArea->addSubWindow(newProcessWindow);
-    //newProcessWindow->show();
-    //processWindowList.push_back(newProcessWindow);
-    delete newImg;
-    //}
+    QString newMedia = QFileDialog::getOpenFileName();
+    if (!newMedia.isEmpty()) {
+        QImage *newImg = new QImage;
+        newImg->load(newMedia);
+        //ui->media->setPixmap(QPixmap::fromImage(*newImg));
+        QLabel *newProcessWindow = new QLabel(this);
+        newProcessWindow->setPixmap(QPixmap::fromImage(*newImg));
+        ui->mdiArea->addSubWindow(newProcessWindow);
+        newProcessWindow->show();
+        //processWindowList.push_back(newProcessWindow);
+        delete newImg;
+    }
+}
+
+void CodepoVision::on_button_import_clicked()
+{
+    QString newMedia = QFileDialog::getOpenFileName();
+    if (!newMedia.isEmpty()) {
+        QImage *newImg = new QImage;
+        newImg->load(newMedia);
+        //ui->media->setPixmap(QPixmap::fromImage(*newImg));
+        QLabel *newProcessWindow = new QLabel(this);
+        newProcessWindow->setPixmap(QPixmap::fromImage(*newImg));
+        ui->mdiArea->addSubWindow(newProcessWindow);
+        newProcessWindow->show();
+        //processWindowList.push_back(newProcessWindow);
+        delete newImg;
+    }
+}
+
+void CodepoVision::on_actionQuitter_triggered()
+{
+    qApp->quit();
 }
