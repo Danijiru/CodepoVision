@@ -15,6 +15,7 @@ class CodepoVision : public QMainWindow
 public:
     explicit CodepoVision(QWidget *parent = 0);
     ~CodepoVision();
+    void on_pushButton_clicked();
 
 private:
     Ui::CodepoVision *ui;
