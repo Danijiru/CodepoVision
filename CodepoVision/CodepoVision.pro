@@ -12,6 +12,9 @@ TARGET = CodepoVision
 TEMPLATE = app
 
 
+INCLUDEPATH += -I/usr/include/opencv
+LIBS += -L/usr/lib/x86_64-linux-gnu/ -lopencv_core -lopencv_imgproc -lopencv_highgui
+
 SOURCES += main.cpp\
         codepovision.cpp
 

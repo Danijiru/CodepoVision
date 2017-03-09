@@ -2,6 +2,7 @@
 #define CODEPOVISION_H
 
 #include <QMainWindow>
+#include <opencv2/opencv.hpp>
 
 namespace Ui {
 class CodepoVision;
