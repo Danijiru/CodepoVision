@@ -21,3 +21,6 @@ SOURCES += main.cpp\
 HEADERS  += codepovision.h
 
 FORMS    += codepovision.ui
+
+RESOURCES += \
+    projecticons.qrc

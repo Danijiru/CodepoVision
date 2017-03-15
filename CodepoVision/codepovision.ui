@@ -74,6 +74,7 @@
      <string>Fichier</string>
     </property>
     <addaction name="actionImporter_une_image"/>
+    <addaction name="separator"/>
     <addaction name="actionQuitter"/>
    </widget>
    <addaction name="menuFichier"/>
@@ -85,6 +86,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionImporter_une_image"/>
+   <addaction name="separator"/>
+   <addaction name="actionQuitter"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -195,17 +199,27 @@
    </widget>
   </widget>
   <action name="actionImporter_une_image">
+   <property name="icon">
+    <iconset resource="projecticons.qrc">
+     <normaloff>:/icons/new_image.png</normaloff>:/icons/new_image.png</iconset>
+   </property>
    <property name="text">
     <string>Importer une image</string>
    </property>
   </action>
   <action name="actionQuitter">
+   <property name="icon">
+    <iconset resource="projecticons.qrc">
+     <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
+   </property>
    <property name="text">
     <string>Quitter</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="projecticons.qrc"/>
+ </resources>
  <connections/>
 </ui>
