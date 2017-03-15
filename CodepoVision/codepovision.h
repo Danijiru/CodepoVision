@@ -2,7 +2,6 @@
 #define CODEPOVISION_H
 
 #include <QMainWindow>
-#include <opencv2/opencv.hpp>
 
 namespace Ui {
 class CodepoVision;
@@ -15,7 +14,6 @@ class CodepoVision : public QMainWindow
 public:
     explicit CodepoVision(QWidget *parent = 0);
     ~CodepoVision();
-    //void on_pushButton_clicked();
 
 private slots:
     void on_actionImporter_une_image_triggered();
@@ -23,6 +21,8 @@ private slots:
     void on_button_import_clicked();
 
     void on_actionQuitter_triggered();
+
+    void on_button_webcam_clicked();
 
 private:
     Ui::CodepoVision *ui;

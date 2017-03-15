@@ -1,6 +1,7 @@
 #include "codepovision.h"
 #include "ui_codepovision.h"
 #include <QFileDialog>
+#include "webcamwindow.h"
 
 CodepoVision::CodepoVision(QWidget *parent) :
     QMainWindow(parent),
@@ -58,4 +59,11 @@ void CodepoVision::on_button_import_clicked()
 void CodepoVision::on_actionQuitter_triggered()
 {
     qApp->quit();
+}
+
+void CodepoVision::on_button_webcam_clicked()
+{
+    ui->button_webcam->setEnabled(false);
+    WebcamWindow *webcamWindow = new WebcamWindow(this);
+    webcamWindow->show();
 }

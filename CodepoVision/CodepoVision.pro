@@ -16,11 +16,14 @@ INCLUDEPATH += -I/usr/include/opencv
 LIBS += -L/usr/lib/x86_64-linux-gnu/ -lopencv_core -lopencv_imgproc -lopencv_highgui
 
 SOURCES += main.cpp\
-        codepovision.cpp
+        codepovision.cpp \
+    webcamwindow.cpp
 
-HEADERS  += codepovision.h
+HEADERS  += codepovision.h \
+    webcamwindow.h
 
-FORMS    += codepovision.ui
+FORMS    += codepovision.ui \
+    webcamwindow.ui
 
 RESOURCES += \
     projecticons.qrc
