@@ -1,12 +1,16 @@
 #include "webcamwindow.h"
 #include "ui_webcamwindow.h"
 
+/**
+ * @brief WebcamWindow::WebcamWindow
+ * @param parent
+ */
 WebcamWindow::WebcamWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WebcamWindow)
 {
     ui->setupUi(this);
-
+    this->parent = (CodepoVision *)parent;
     capture = cvCreateCameraCapture(CV_CAP_ANY);    // Ouvre le flux vidéo correspondant à la webcam
     // Vérifier si l'ouverture du flux est ok
     if (!capture) {
@@ -35,7 +39,7 @@ void WebcamWindow::displayImage()
    char *imageData = image->imageData;
    int width = image->width;
    int height = image->height;
-   QImage qimage = QImage(width, height, QImage::Format_RGB32);
+   qimage = QImage(width, height, QImage::Format_RGB32);
    uint *pixel;
    for (int y = 0; y < height; y++, imageData += image->widthStep) {
        for (int x = 0; x < width; x++) {
@@ -56,4 +60,10 @@ void WebcamWindow::on_button_fermer_clicked()
     disconnect(changeImage, &QTimer::timeout, this, &WebcamWindow::displayImage);
     cvReleaseCapture(&capture);
     this->close();
+    parent->activer_button_webcam();
+}
+
+void WebcamWindow::on_button_photo_clicked()
+{
+    parent->afficher_image(&qimage);
 }

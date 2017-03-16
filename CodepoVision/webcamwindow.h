@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <opencv2/opencv.hpp>
 #include <QTimer>
+#include "codepovision.h"
 
 namespace Ui {
 class WebcamWindow;
@@ -22,9 +23,13 @@ private slots:
 
     void on_button_fermer_clicked();
 
+    void on_button_photo_clicked();
+
 private:
     Ui::WebcamWindow *ui;
     QTimer *changeImage;
+    QImage qimage;
+    CodepoVision *parent;
     CvCapture *capture; // Capture vidéo
 };
 

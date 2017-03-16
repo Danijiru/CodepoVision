@@ -2,6 +2,7 @@
 #define CODEPOVISION_H
 
 #include <QMainWindow>
+#include <QFileDialog>
 
 namespace Ui {
 class CodepoVision;
@@ -13,6 +14,11 @@ class CodepoVision : public QMainWindow
 
 public:
     explicit CodepoVision(QWidget *parent = 0);
+
+    void afficher_image(QImage *img);
+
+    void activer_button_webcam();
+
     ~CodepoVision();
 
 private slots:
@@ -26,6 +32,10 @@ private slots:
 
 private:
     Ui::CodepoVision *ui;
+
+    void importer_image();
+
+
 };
 
 #endif // CODEPOVISION_H
