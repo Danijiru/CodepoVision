@@ -5,23 +5,19 @@
 
 CodepoVision::CodepoVision(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::CodepoVision)
+    _ui(new Ui::CodepoVision)
 {
-    ui->setupUi(this);
-
-    //cv::Mat inputImage = cv::imread("/home/sam/Images/emily.jpg");
-    //cv::imshow("Display Image", inputImage);
+    _ui->setupUi(this);
 
     QWidget::showFullScreen();
     QWidget::showMaximized();
-
-    //connect(ui->actionImporter_une_image, &QAction::triggered, this, &CodepoVision::on_pushButton_clicked);
 
 }
 
 CodepoVision::~CodepoVision()
 {
-    delete ui;
+    disconnect(webcamWindow, &WebcamWindow::closed, this, &CodepoVision::webcamClosed);
+    delete _ui;
 }
 
 /**
@@ -34,7 +30,7 @@ CodepoVision::~CodepoVision()
 void CodepoVision::afficher_image(QImage *img){
     QLabel *newProcessWindow = new QLabel(this);
     newProcessWindow->setPixmap(QPixmap::fromImage(*img));
-    ui->mdiArea->addSubWindow(newProcessWindow);
+    _ui->mdiArea->addSubWindow(newProcessWindow);
     newProcessWindow->show();
     //delete img;
 }
@@ -63,7 +59,7 @@ void CodepoVision::importer_image(){
  * @auteur : danny & sam
  */
 void CodepoVision::activer_button_webcam(){
-    ui->button_webcam->setEnabled(true);
+    _ui->button_webcam->setEnabled(true);
 }
 
 void CodepoVision::on_actionImporter_une_image_triggered()
@@ -83,7 +79,14 @@ void CodepoVision::on_actionQuitter_triggered()
 
 void CodepoVision::on_button_webcam_clicked()
 {
-    ui->button_webcam->setEnabled(false);
+    _ui->button_webcam->setEnabled(false);
     WebcamWindow *webcamWindow = new WebcamWindow(this);
+    webcamWindow->setAttribute(Qt::WA_DeleteOnClose);
     webcamWindow->show();
+    connect(webcamWindow, &WebcamWindow::closed, this, &CodepoVision::webcamClosed);
+}
+
+void CodepoVision::webcamClosed()
+{
+    _ui->button_webcam->setEnabled(true);
 }

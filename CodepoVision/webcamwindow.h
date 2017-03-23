@@ -15,8 +15,11 @@ class WebcamWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit WebcamWindow(QWidget *parent = 0);
+    explicit WebcamWindow(QWidget *_parent = 0);
     ~WebcamWindow();
+
+signals:
+    void closed();
 
 private slots:
     void displayImage();
@@ -26,11 +29,11 @@ private slots:
     void on_button_photo_clicked();
 
 private:
-    Ui::WebcamWindow *ui;
-    QTimer *changeImage;
-    QImage qimage;
-    CodepoVision *parent;
-    CvCapture *capture; // Capture vidéo
+    Ui::WebcamWindow *_ui;
+    QTimer *_changeImage;
+    QImage _qimage;
+    CodepoVision *_parent;
+    CvCapture *_capture; // Capture vidéo
 };
 
 #endif // WEBCAMWINDOW_H

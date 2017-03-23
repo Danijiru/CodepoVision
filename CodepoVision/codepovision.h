@@ -29,9 +29,10 @@ private slots:
     void on_actionQuitter_triggered();
 
     void on_button_webcam_clicked();
+    void webcamClosed();
 
 private:
-    Ui::CodepoVision *ui;
+    Ui::CodepoVision *_ui;
 
     void importer_image();
 
