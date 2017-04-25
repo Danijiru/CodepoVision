@@ -18,6 +18,7 @@ CodepoVision::CodepoVision(QWidget *parent) :
 CodepoVision::~CodepoVision()
 {
     //disconnect(webcamWindow, &WebcamWindow::closed, this, &CodepoVision::webcamClosed);
+    disconnect(_ui->mdiArea, &QMdiArea::subWindowActivated, this, &CodepoVision::imageSelected);
     delete _ui;
 }
 
@@ -49,7 +50,7 @@ void CodepoVision::imageSelected(QMdiSubWindow *subWindow){
  * @auteur : danny & sam
  */
 void CodepoVision::importer_image(){
-    QString newMedia = QFileDialog::getOpenFileName();
+    QString newMedia = QFileDialog::getOpenFileName(this, tr("Open an image"), QString(), tr("Images (*.png *.PNG *.jpeg *.JPEG *.jpg *.JPG *.xpm *.XPM *.pgm *.PGM *.tiff *.TIFF *.gif *.GIF *.bmp *.BMP *.ppm *.PPM *.pbm *.PBM *.pnm *.PNM)"));
     if (!newMedia.isEmpty()) {
         QImage *newImg = new QImage;
         newImg->load(newMedia);
