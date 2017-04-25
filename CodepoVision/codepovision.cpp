@@ -155,10 +155,10 @@ void CodepoVision::on_button_detectface_clicked()
 }
 
 /**
- * @nom :
- * @role :
- * @entrees :
- * @sorties :
+ * @nom : QImage2IplImage
+ * @role : convertir une QImage en IplImage
+ * @entrees : pointeur QImage
+ * @sorties : pointeur IlpImage
  * @auteur :
  */
 IplImage* CodepoVision::QImage2IplImage(QImage *qimg)
