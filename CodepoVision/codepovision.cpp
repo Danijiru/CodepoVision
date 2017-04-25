@@ -2,7 +2,6 @@
 #include "ui_codepovision.h"
 
 #include "webcamwindow.h"
-#include <QMdiSubWindow>
 
 CodepoVision::CodepoVision(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +12,7 @@ CodepoVision::CodepoVision(QWidget *parent) :
     QWidget::showFullScreen();
     QWidget::showMaximized();
 
+    connect(_ui->mdiArea, &QMdiArea::subWindowActivated, this, &CodepoVision::imageSelected);
 }
 
 CodepoVision::~CodepoVision()
@@ -30,11 +30,15 @@ CodepoVision::~CodepoVision()
  */
 void CodepoVision::afficher_image(QImage *img){
     QLabel *newProcessWindow = new QLabel(this);
-    //limage = *img;
     newProcessWindow->setPixmap(QPixmap::fromImage(*img));
     _ui->mdiArea->addSubWindow(newProcessWindow);
     newProcessWindow->show();
-    //delete img;
+    _ui->button_detectface->setEnabled(true);
+}
+
+void CodepoVision::imageSelected(QMdiSubWindow *subWindow){
+    if (subWindow == 0) //si on a fermé la dernière image
+        _ui->button_detectface->setEnabled(false);  //on désactive l'option de détection de visage
 }
 
 /**
@@ -128,37 +132,26 @@ void CodepoVision::webcamClosed()
  */
 void CodepoVision::on_button_detectface_clicked()
 {
-    std::cout << "fuck you 1" << std::endl;
     CvHaarClassifierCascade *cascade;
     CvMemStorage			*storage;
 
-    QString strFilename = "/home/deprez/Documents/UEProjet/CodepoVision/CodepoVision/cascade/haarcascade_frontalface_alt.xml";
+    QString strFilename = "../CodepoVision/cascade/haarcascade_frontalface_alt.xml";
     QByteArray ba = strFilename.toLatin1();
-     const char *filename = ba.data();
-    std::cout << "fuck you 2" << std::endl;
-      //récuperer l'image de la fenetre active
-      QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
-      std::cout << "fuck you 2.1" << std::endl;
-      QImage img = label->pixmap()->toImage();
-      //convertir en IplImage
-      std::cout << "fuck you 2.4" << std::endl;
-      IplImage  *imgIpl;
-      std::cout << "fuck you 2.5" << std::endl;
-      imgIpl = QImage2IplImage(&img);
-    std::cout << "fuck you 3" << std::endl;
-      cascade = ( CvHaarClassifierCascade* )cvLoad( filename, 0, 0, 0 );
-      std::cout << "fuck you4" << std::endl;
-      storage = cvCreateMemStorage( 0 );
-      //capture = cvCreateCameraCapture(CV_CAP_ANY);
-      std::cout << "fuck you5" << std::endl;
-      //cvNamedWindow( "Window-FT", 1 );
-      std::cout << "fuck you6" << std::endl;
-      detecter_visage( imgIpl, cascade,storage );
-      std::cout << "fuck you7" << std::endl;
+    const char *filename = ba.data();
+    //récuperer l'image de la fenetre active
+    QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
+    QImage img = label->pixmap()->toImage();
+    //convertir en IplImage
+    IplImage  *imgIpl;
+    imgIpl = QImage2IplImage(&img);
+    cascade = ( CvHaarClassifierCascade* )cvLoad( filename, 0, 0, 0 );
+    storage = cvCreateMemStorage( 0 );
 
-      //cvDestroyWindow( "Window-FT" );
-      cvReleaseHaarClassifierCascade(&cascade);
-      cvReleaseMemStorage( &storage );
+    //detection du visage
+    detecter_visage( imgIpl, cascade,storage );
+
+    cvReleaseHaarClassifierCascade(&cascade);
+    cvReleaseMemStorage( &storage );
 }
 
 /**

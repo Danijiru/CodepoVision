@@ -5,12 +5,9 @@
 #include <QFileDialog>
 #include <opencv/highgui.h>
 #include <opencv/cv.h>
-
-
-
 #include <opencv2/opencv.hpp>
-
 #include <stdio.h>
+#include <QMdiSubWindow>
 
 namespace Ui {
 class CodepoVision;
@@ -22,7 +19,6 @@ class CodepoVision : public QMainWindow
 
 public:
 
-    //QImage limage;
     explicit CodepoVision(QWidget *parent = 0);
 
     void afficher_image(QImage *img);
@@ -37,6 +33,8 @@ private slots:
     void on_button_import_clicked();
 
     void on_actionQuitter_triggered();
+
+    void imageSelected(QMdiSubWindow *subWindow);
 
     void on_button_webcam_clicked();
 
