@@ -17,10 +17,25 @@ LIBS += -L/usr/lib/x86_64-linux-gnu/ -lopencv_core -lopencv_imgproc -lopencv_hig
 
 SOURCES += main.cpp\
         codepovision.cpp \
-    webcamwindow.cpp
+    webcamwindow.cpp \
+    asmmodel.cpp \
+    shapemodel.cpp \
+    shapevec.cpp \
+    afreader.cpp \
+    modelfile.cpp \
+    modelimage.cpp \
+    shapeinfo.cpp \
+    similaritytrans.cpp
 
 HEADERS  += codepovision.h \
-    webcamwindow.h
+    webcamwindow.h \
+    asmmodel.h \
+    shapemodel.h \
+    modelfile.h \
+    modelimage.h \
+    shapeinfo.h \
+    shapevec.h \
+    similaritytrans.h
 
 FORMS    += codepovision.ui \
     webcamwindow.ui

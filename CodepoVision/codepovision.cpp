@@ -2,6 +2,7 @@
 #include "ui_codepovision.h"
 
 #include "webcamwindow.h"
+//#include "modelfile.h"
 
 CodepoVision::CodepoVision(QWidget *parent) :
     QMainWindow(parent),
@@ -31,15 +32,21 @@ CodepoVision::~CodepoVision()
  */
 void CodepoVision::afficher_image(QImage *img){
     QLabel *newProcessWindow = new QLabel(this);
-    newProcessWindow->setPixmap(QPixmap::fromImage(*img));
+    QPixmap pixmap = QPixmap::fromImage(*img);
+    if (pixmap.size().height() > 400)   //si l'image importée est trop grande on la redimensionne
+        pixmap = pixmap.scaled(400, 400, Qt::KeepAspectRatio);
+    newProcessWindow->setPixmap(pixmap);
     _ui->mdiArea->addSubWindow(newProcessWindow);
     newProcessWindow->show();
     _ui->button_detectface->setEnabled(true);
+    _ui->button_detectFeatures->setEnabled(true);
 }
 
 void CodepoVision::imageSelected(QMdiSubWindow *subWindow){
-    if (subWindow == 0) //si on a fermé la dernière image
-        _ui->button_detectface->setEnabled(false);  //on désactive l'option de détection de visage
+    if (subWindow == 0) {   //si on a fermé la dernière image on désactive les options de détection faciale
+        _ui->button_detectface->setEnabled(false);
+        _ui->button_detectFeatures->setEnabled(false);
+    }
 }
 
 /**
@@ -220,4 +227,45 @@ QImage*  CodepoVision::IplImage2QImage(IplImage *iplImg)
     }
     return qimg;
 
+}
+
+//! Run OpenCV object detection and do ASM fitting on each detected object.
+void CodepoVision::searchAndFit(StatModel::ASMModel & asmModel, cv::CascadeClassifier &objCascadeClassfifier, const string & picPath, int verboseL) {
+    // Load image.
+    cv::Mat img = cv::imread(picPath);
+    if (img.empty()) {
+        std::cerr << "Load image '" << picPath << "' failed." << endl;
+        exit(2);
+    }
+
+    // Face detection.
+    // Pourrait etre remplacée par celle qu'on a développé?
+    vector< cv::Rect > faces;
+    objCascadeClassfifier.detectMultiScale(
+        img, faces,
+        1.2, 2, CV_HAAR_SCALE_IMAGE, Size(60, 60) );
+
+    // Fit to ASM!
+    vector < StatModel::ASMFitResult > fitResult = asmModel.fitAll(img, faces, verboseL);
+    asmModel.showResult(img, fitResult);
+    cvWaitKey();
+}
+
+void CodepoVision::on_button_detectFeatures_clicked()
+{
+    std::string modelFile = "../CodepoVision/data/grayall_asm.model";
+    std::string picPath = "/home/danijiru/Images/X158020_TK2_0816-rawMasterwmsm.JPG";
+    std::string faceCascadePath = "../CodepoVision/data/haarcascade_frontalface_alt.xml";
+    int verboseLevel = 0;
+
+    StatModel::ASMModel asmModel;
+    asmModel.loadFromFile(modelFile);
+
+    cv::CascadeClassifier faceCascade;
+    if (!faceCascade.load(faceCascadePath)) {
+        std::cerr << "Now, a (face) detector is needed. " << "Please check the URL " << faceCascadePath << endl;
+        exit(1);
+    }
+
+    searchAndFit(asmModel, faceCascade, picPath, verboseLevel);
 }

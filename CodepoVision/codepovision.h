@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <QMdiSubWindow>
+#include "asmmodel.h"
 
 namespace Ui {
 class CodepoVision;
@@ -42,6 +43,8 @@ private slots:
 
     void on_button_detectface_clicked();
 
+    void on_button_detectFeatures_clicked();
+
 private:
     Ui::CodepoVision *_ui;
 
@@ -52,6 +55,8 @@ private:
     QImage*  IplImage2QImage(IplImage *iplImg);
 
     IplImage* QImage2IplImage(QImage *qimg);
+
+    void searchAndFit(StatModel::ASMModel & asmModel, cv::CascadeClassifier &objCascadeClassfifier, const string & picPath, int verboseL);
 };
 
 #endif // CODEPOVISION_H
