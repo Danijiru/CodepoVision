@@ -45,18 +45,22 @@ private slots:
 
     void on_button_detectFeatures_clicked();
 
+    void on_button_zonecaracteristique_clicked();
+
 private:
     Ui::CodepoVision *_ui;
 
     void importer_image();
 
-    void detecter_visage( IplImage *img,CvHaarClassifierCascade *cascade, CvMemStorage *storage );
+    vector<CvRect> detecter_visage( IplImage *img,CvHaarClassifierCascade *cascade, CvMemStorage *storage );
 
     QImage*  IplImage2QImage(IplImage *iplImg);
 
     IplImage* QImage2IplImage(QImage *qimg);
 
-    void searchAndFit(StatModel::ASMModel & asmModel, cv::CascadeClassifier &objCascadeClassfifier, const string & picPath, int verboseL);
+    void searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL);
+
+    void detecter_ptInteret(IplImage *img, QString strFilename);
 };
 
 #endif // CODEPOVISION_H
