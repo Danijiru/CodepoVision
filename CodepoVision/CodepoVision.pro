@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     asmmodel.cpp \
     shapemodel.cpp \
     shapevec.cpp \
-    afreader.cpp \
     modelfile.cpp \
     modelimage.cpp \
     shapeinfo.cpp \
