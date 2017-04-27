@@ -32,37 +32,4 @@ void SimilarityTrans::transform(const ShapeVec &src, ShapeVec &dst) const{
     }
 }
 
-void SimilarityTrans::setTransformByAlign(const ShapeVec &x, const ShapeVec &xp) {
-    int nP = x.rows / 2;
-    a = xp.dot(x) / x.dot(x);
-    b = 0;
-    for (int i=0; i<nP; i++)
-        b += x.X(i) * xp.Y(i) - x.Y(i)*xp.X(i);
-    b /= x.dot(x);
-    double xxm, xym;
-    xxm = x.getXMean();
-    xym = x.getYMean();
-    Xt = -a * xxm + b * xym + xp.getXMean();
-    Yt = -b * xxm - a * xym + xp.getYMean();
-}
-
-void SimilarityTrans::warpImage(const Mat &imgSrc, Mat &imgDst) const
-{
-    Mat_< double > M(2, 3);
-    M<< a, -b, Xt,
-        b,  a, Yt;
-    cv::warpAffine(imgSrc, imgDst, M, imgSrc.size(), cv::INTER_LINEAR);
-}
-
-void SimilarityTrans::warpImgBack(const cv::Mat& imgSrc, Mat& imgDst, bool useDstSize) const
-{
-
-    Mat_< double > M(2, 3), mV;
-    M<< a, -b, Xt,
-        b,  a, Yt;
-    if (useDstSize)
-        cv::warpAffine(imgSrc, imgDst, M, imgDst.size(), cv::INTER_LINEAR|cv::WARP_INVERSE_MAP);
-    else
-        cv::warpAffine(imgSrc, imgDst, M, imgSrc.size(), cv::INTER_LINEAR|cv::WARP_INVERSE_MAP);
-}
 } // Namespace

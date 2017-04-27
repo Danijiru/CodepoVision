@@ -31,18 +31,6 @@ class ShapeVec : public Mat_< double > {
     //! Default constructor does nothing.
     ShapeVec(){}
 
-    //! Align to another shape vector
-    //void alignTo(const ShapeVec & ref);
-
-    //! Move the center of gravity to origin. X and Y are moved seperately.
-    //void zeroGravity();
-
-    //! Scale the vector's norm to 1.
-    //void scaleToOne();
-
-    //void doTranslate(double vX, double vY);
-    //void doScale(double r);
-
     double getXMean() const {return mean(rowRange(0, rows / 2))[0];}
     double getYMean() const {return mean(rowRange(rows / 2, rows))[0];}
 

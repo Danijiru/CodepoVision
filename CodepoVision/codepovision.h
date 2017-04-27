@@ -24,8 +24,6 @@ public:
 
     void afficher_image(QImage *img);
 
-    void activer_button_webcam();
-
     ~CodepoVision();
 
 private slots:

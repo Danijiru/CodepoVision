@@ -73,7 +73,7 @@
      <x>0</x>
      <y>0</y>
      <width>877</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -229,6 +229,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="button_zonecaracteristique">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Zones caractéristiques</string>
        </property>

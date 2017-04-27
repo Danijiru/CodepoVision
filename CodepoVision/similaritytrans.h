@@ -24,12 +24,6 @@ public:
     //! find the transformation that best align x to xp
     void setTransformByAlign(const ShapeVec &x, const ShapeVec &xp);
 
-    //! Warp an image by this similarity transform.
-    void warpImage(const Mat &imgSrc, Mat &imgDst) const;
-
-    //! Warp an image by the inverted similarity transform.
-    void warpImgBack(const Mat &imgSrc, Mat &imgDst, bool useDstSize=false) const;
-
     //! Get the scale factor
     double getS() const { return sqrt(a*a+b*b); }
 

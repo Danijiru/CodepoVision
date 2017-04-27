@@ -17,39 +17,6 @@
 #include "shapevec.h"
 
 namespace StatModel {
-/*void ShapeVec::zeroGravity()
-{
-    doTranslate(-getXMean(), -getYMean());
-}*/
-
-/*void ShapeVec::scaleToOne()
-{
-    doScale(1/norm(*this));
-}*/
-
-/*void ShapeVec::alignTo( const ShapeVec &ref )
-{
-    // Find best scale factor and theta.
-    static SimilarityTrans st;
-    st.setTransformByAlign(*this, ref);
-    st.transform(*this, *this);
-    
-    doScale(1/this->dot(ref));
-}*/
-
-/*void ShapeVec::doTranslate(double vX, double vY)
-{
-    for (int i=0; i<rows/2; i++)
-        (*this)(i, 0) += vX;
-    for (int i=rows/2; i<rows; i++)
-        (*this)(i, 0) += vY;
-}*/
-
-/*void ShapeVec::doScale(double r)
-{
-    (*this) *= r;
-}*/
-
 void ShapeVec::restoreToPointList(vector< cv::Point_< int > >& points,
                                   const SimilarityTrans& st)
 {
@@ -78,12 +45,12 @@ cv::Rect_< double > ShapeVec::getBoundRect()
         if (y>maxY) maxY = y;
     }
     return cv::Rect_< double >(
-        cv::Point_<double>(minX, minY), 
+        cv::Point_<double>(minX, minY),
         cv::Size_<double>(maxX-minX, maxY-minY));
 }
 
 SimilarityTrans ShapeVec::getShapeTransformFitingSize(
-        const cv::Size &rect, 
+        const cv::Size &rect,
         double scaleRatio, double xOffset, double yOffset)
 {
     // Estimate scale and translate
@@ -96,11 +63,11 @@ SimilarityTrans ShapeVec::getShapeTransformFitingSize(
     else
         ratio = ratioY;
     double transX, transY;
-    
+
     ratio *= scaleRatio;
     transX = bdRect.x - bdRect.width*(ratioX/ratio-1 + xOffset)/2;
     transY = bdRect.y - bdRect.height*(ratioY/ratio-1 + yOffset)/2;
-    
+
     SimilarityTrans st;
     st.a = ratio;
     st.b = 0;
@@ -111,7 +78,7 @@ SimilarityTrans ShapeVec::getShapeTransformFitingSize(
 
 void ShapeVec::fromPointList(const std::vector< cv::Point2i >& v)
 {
-	this->create(v.size()*2, 1);
+    this->create(v.size()*2, 1);
     for (int i=0; i<(rows>>1); i++){
         (*this)(i, 0) = v[i].x;
         (*this)(i+(rows>>1), 0) = v[i].y;
