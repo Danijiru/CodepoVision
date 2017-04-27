@@ -87,6 +87,7 @@ private:
     double sigma2Pyr[3];
 
 public:
+
     //! Empty ASM model.
     ASMModel():localFeatureRad(4), ns(6){}
 
@@ -104,6 +105,9 @@ public:
         \param verbose Verbosity level.
         \return A vector of FitResult's.
     */
+
+
+
     vector< ASMFitResult > fitAll(
         const Mat & img,
         const vector< cv::Rect > & detectedObjs,
@@ -121,8 +125,8 @@ public:
     //! Load the model from a file
     void loadFromFile(const string& filename);
 
-    //! Show the result in the image
-    void showResult(Mat &img, const vector< ASMFitResult > &res);
+    //! Draw the feature points on the image
+    Mat drawPoints(Mat &img, const vector< ASMFitResult > &res);
 
 private:
     //! Use Bayesian Tangent Shape Model to find best parameter and transformation for the given shape

@@ -1,5 +1,7 @@
 #include "asmmodel.h"
 #include <cstdio>
+#include "codepovision.h"
+
 
 namespace StatModel {
 
@@ -92,7 +94,7 @@ vector< ASMFitResult > ASMModel::fitAll(
     return fitResultV;
 }
 
-void ASMModel::showResult(Mat& img, const vector< ASMFitResult >& res)
+Mat ASMModel::drawPoints(Mat& img, const vector< ASMFitResult >& res)
 {
     Mat mb;
     if (img.channels()==1)
@@ -107,8 +109,7 @@ void ASMModel::showResult(Mat& img, const vector< ASMFitResult >& res)
         shapeInfo.drawMarkPointsOnImg(mb, V, true);
     }
 
-    if (!img.empty())
-        imshow("hoho", mb);
+    return mb;
 }
 
 ASMFitResult ASMModel::fit(const cv::Mat& img, int verbose)

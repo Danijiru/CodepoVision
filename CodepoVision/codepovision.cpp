@@ -2,6 +2,7 @@
 #include "ui_codepovision.h"
 #include "webcamwindow.h"
 #include <QMessageBox>
+#include <QLabel>
 
 CodepoVision::CodepoVision(QWidget *parent) :
     QMainWindow(parent),
@@ -335,7 +336,13 @@ void CodepoVision::searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageI
 
     // Fit to ASM!
     vector < StatModel::ASMFitResult > fitResult = asmModel.fitAll(img, faces, verboseL);
-    asmModel.showResult(img, fitResult);
+    cv::Mat ptsImg = asmModel.drawPoints(img, fitResult);
+
+    // Affichage des points d'intérêt
+    cv::Mat temp(ptsImg.cols, ptsImg.rows, ptsImg.type());
+    cvtColor(ptsImg, temp, CV_BGR2RGB);
+    QImage qimg = QImage(temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+    afficher_image(&qimg);
 }
 
 
