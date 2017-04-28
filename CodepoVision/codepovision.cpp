@@ -102,9 +102,9 @@ void CodepoVision::imageSelected(QMdiSubWindow *subWindow)
 void CodepoVision::on_button_webcam_clicked()
 {
     _ui->button_webcam->setEnabled(false);
-    WebcamWindow webcamWindow(this);
-    webcamWindow.setAttribute(Qt::WA_DeleteOnClose);
-    webcamWindow.show();
+    WebcamWindow* webcamWindow = new WebcamWindow(this);
+    webcamWindow->setAttribute(Qt::WA_DeleteOnClose);
+    webcamWindow->show();
 }
 
 /**
