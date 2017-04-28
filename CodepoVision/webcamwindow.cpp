@@ -10,12 +10,12 @@ WebcamWindow::WebcamWindow(QWidget *parent) :
     _ui(new Ui::WebcamWindow)
 {
     _ui->setupUi(this);
-    this->_parent = (CodepoVision *)parent;
+    _parent = (CodepoVision *)parent;
     _capture = cvCreateCameraCapture(CV_CAP_ANY);    // Ouvre le flux vidéo correspondant à la webcam
     // Vérifier si l'ouverture du flux est ok
     if (!_capture) {
-       std::cout << "Ouverture du flux vidéo impossible !\n" << std::endl;
-       exit(1);
+       QMessageBox::critical(this, "Erreur", "Ouverture du flux vidéo impossible");
+       this->close();
     }
     // Initialisation et lancement du timer rythmant l'affichage des images de la webcam
     _changeImage = new QTimer(this);
@@ -25,7 +25,7 @@ WebcamWindow::WebcamWindow(QWidget *parent) :
 
 WebcamWindow::~WebcamWindow()
 {
-    emit(closed());
+    _parent->webcamClosed();
     disconnect(_changeImage, &QTimer::timeout, this, &WebcamWindow::displayImage);
     cvReleaseCapture(&_capture);
     delete _ui;

@@ -18,9 +18,6 @@ public:
     explicit WebcamWindow(QWidget *_parent = 0);
     ~WebcamWindow();
 
-signals:
-    void closed();
-
 private slots:
     void displayImage();
 

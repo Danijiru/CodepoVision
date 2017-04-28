@@ -1,7 +1,6 @@
 #include "codepovision.h"
 #include "ui_codepovision.h"
 #include "webcamwindow.h"
-#include <QMessageBox>
 #include <QLabel>
 
 CodepoVision::CodepoVision(QWidget *parent) :
@@ -18,7 +17,6 @@ CodepoVision::CodepoVision(QWidget *parent) :
 
 CodepoVision::~CodepoVision()
 {
-    //disconnect(webcamWindow, &WebcamWindow::closed, this, &CodepoVision::webcamClosed);
     disconnect(_ui->mdiArea, &QMdiArea::subWindowActivated, this, &CodepoVision::imageSelected);
     delete _ui;
 }
@@ -51,7 +49,8 @@ void CodepoVision::on_button_import_clicked()
  * @entrees : QImage image
  * @sorties : void
  */
-void CodepoVision::importer_image(){
+void CodepoVision::importer_image()
+{
     QString newMedia = QFileDialog::getOpenFileName(this, "Open an image", QString(), "Images (*.png *.PNG *.jpeg *.JPEG *.jpg *.JPG *.xpm *.XPM *.pgm *.PGM *.tiff *.TIFF *.gif *.GIF *.bmp *.BMP *.ppm *.PPM *.pbm *.PBM *.pnm *.PNM)");
     if (!newMedia.isEmpty()) {
         QImage *newImg = new QImage(newMedia);
@@ -65,7 +64,8 @@ void CodepoVision::importer_image(){
  * @entrees : QImage image
  * @sorties : void
  */
-void CodepoVision::afficher_image(QImage *img){
+void CodepoVision::afficher_image(QImage *img)
+{
     QLabel *newProcessWindow = new QLabel(this);
     QPixmap pixmap = QPixmap::fromImage(*img);
     /*if (pixmap.size().height() > 400)   //si l'image importée est trop grande on la redimensionne
@@ -84,7 +84,8 @@ void CodepoVision::afficher_image(QImage *img){
  * @entrees : QMdiSubWindow *subWindow
  * @sorties : void
  */
-void CodepoVision::imageSelected(QMdiSubWindow *subWindow){
+void CodepoVision::imageSelected(QMdiSubWindow *subWindow)
+{
     if (subWindow == 0) {   //si on a fermé la dernière image on désactive les options de détection faciale
         _ui->button_detectface->setEnabled(false);
         _ui->button_zonecaracteristique->setEnabled(false);
@@ -94,22 +95,21 @@ void CodepoVision::imageSelected(QMdiSubWindow *subWindow){
 
 /**
  * @nom : on_button_webcam_clicked()
- * @role : actionne la webcam pour prendre une photo
+ * @role : actionne la webcam pour prendre des photos
  * @entrees :
  * @sorties :
  */
 void CodepoVision::on_button_webcam_clicked()
 {
     _ui->button_webcam->setEnabled(false);
-    WebcamWindow *webcamWindow = new WebcamWindow(this);
-    webcamWindow->setAttribute(Qt::WA_DeleteOnClose);
-    webcamWindow->show();
-    connect(webcamWindow, &WebcamWindow::closed, this, &CodepoVision::webcamClosed);
+    WebcamWindow webcamWindow(this);
+    webcamWindow.setAttribute(Qt::WA_DeleteOnClose);
+    webcamWindow.show();
 }
 
 /**
  * @nom : webcamClosed
- * @role : ferme la webcam
+ * @role : réactive le bouton d'ouverture de la webcam
  * @entrees :
  * @sorties :
  */
@@ -118,64 +118,6 @@ void CodepoVision::webcamClosed()
     _ui->button_webcam->setEnabled(true);
 }
 
-
-/**
- * @nom : on_button_detectface_clicked()
- * @role : detecter une visage sur l'image de la fenetre active
- * @entrees :
- * @sorties :
- */
-void CodepoVision::on_button_detectface_clicked()
-{
-    CvHaarClassifierCascade *cascade;
-    CvMemStorage			*storage;
-
-    QString strFilename = "../CodepoVision/cascade/haarcascade_frontalface_alt.xml";
-    QByteArray ba = strFilename.toLatin1();
-    const char *filename = ba.data();
-    //récuperer l'image de la fenetre active
-    QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
-    QImage img = label->pixmap()->toImage();
-    //convertir en IplImage
-    IplImage  *imgIpl;
-    imgIpl = QImage2IplImage(&img);
-    cascade = (CvHaarClassifierCascade*)cvLoad(filename, 0, 0, 0);
-    storage = cvCreateMemStorage(0);
-
-    //detection du visage et affichage du rectangle englobant
-    vector<CvRect> rects = detecter_visage(imgIpl, cascade, storage);  //dessine le rectangle directement sur imgIpl
-    if (! rects.empty())
-        afficher_image(IplImage2QImage(imgIpl));
-    else
-        QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
-    cvReleaseHaarClassifierCascade(&cascade);
-    cvReleaseMemStorage(&storage);
-}
-
-/**
- * @nom : detecter_visage
- * @role : detecter le visage
- * @entrees :IplImage *img, CvHaarClassifierCascade *cascade, CvMemStorage *storage
- * @sorties :vector<CvRect>
- */
-vector<CvRect> CodepoVision::detecter_visage(IplImage *img, CvHaarClassifierCascade *cascade, CvMemStorage *storage)
-{
-   int i;
-   vector<CvRect> rects;
-   CvRect *r;
-   CvSeq *faces = cvHaarDetectObjects(img, cascade, storage, 1.1, 3, 0, cvSize(40, 40));
-
-   for( i = 0 ; i < ( faces ? faces->total : 0 ) ; i++ ) {
-       r = ( CvRect* )cvGetSeqElem( faces, i );
-       rects.push_back(*r);
-       cvRectangle( img,
-                    cvPoint( r->x, r->y ),
-                    cvPoint( r->x + r->width, r->y + r->height ),
-                    CV_RGB( 255, 0, 0 ), 1, 8, 0 );
-   }
-
-   return rects;
-}
 
 /**
  * @nom : QImage2IplImage
@@ -231,6 +173,76 @@ QImage* CodepoVision::IplImage2QImage(IplImage *iplImg)
 
 }
 
+
+/**
+ * @nom : currentImage()
+ * @role : renvoie l'image actuellement sélectionnée
+ * @entrees :
+ * @sorties : pointeur sur image de type IplImage
+ */
+IplImage* CodepoVision::currentImage()
+{
+    //récuperer l'image de la fenetre active
+    QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
+    QImage img = label->pixmap()->toImage();
+    //convertir en IplImage
+    IplImage  *imgIpl = QImage2IplImage(&img);
+    return imgIpl;
+}
+
+/**
+ * @nom : on_button_detectface_clicked()
+ * @role : detecter une visage sur l'image de la fenetre active
+ * @entrees :
+ * @sorties :
+ */
+void CodepoVision::on_button_detectface_clicked()
+{
+    IplImage *imgIpl = currentImage();
+
+    //detection de visage et affichage du rectangle englobant
+    vector<CvRect> rects = detecter_zonesInteret(imgIpl, "../CodepoVision/cascade/haarcascade_frontalface_alt.xml");  //dessine le rectangle directement sur imgIpl
+    if (rects.empty())
+        QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
+    else
+        afficher_image(IplImage2QImage(imgIpl));
+}
+
+/**
+ * @nom : detecter_zonesInteret
+ * @role : detecter les zones caractéristiques
+ * @entrees : IplImage *img, QString strFilename
+ * @sorties : vector<CvRect>
+ */
+vector<CvRect> CodepoVision::detecter_zonesInteret(IplImage *img, QString strFilename)
+{
+    //conversion QString vers char* du chemin vers le fichier de cascade
+    QByteArray ba = strFilename.toLatin1();
+    const char *filename = ba.data();
+
+    CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade*)cvLoad(filename, 0, 0, 0);
+    CvMemStorage			*storage = cvCreateMemStorage(0);
+
+    vector<CvRect> rects;
+    CvRect *r;
+    CvSeq *zones = cvHaarDetectObjects(img, cascade, storage, 1.08, 10, 0, cvSize(40, 40));
+
+    for(int i = 0 ; i < zones->total; i++) {
+        r = (CvRect*)cvGetSeqElem(zones, i);
+        rects.push_back(*r);
+        cvRectangle( img,
+                     cvPoint(r->x, r->y),
+                     cvPoint(r->x + r->width, r->y + r->height),
+                     CV_RGB(255, 0, 0), 1, 8, 0 );
+    }
+
+    cvReleaseHaarClassifierCascade(&cascade);
+    cvReleaseMemStorage(&storage);
+
+    return rects;
+}
+
+
 /**
  * @nom : on_button_zonecaracteristique_clicked
  * @role : detecter des zones caractéristiques
@@ -239,85 +251,29 @@ QImage* CodepoVision::IplImage2QImage(IplImage *iplImg)
  */
 void CodepoVision::on_button_zonecaracteristique_clicked()
 {
-    //récuperer l'image de la fenetre active
-        QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
-        QImage img = label->pixmap()->toImage();
+    IplImage *imgIpl = currentImage();
 
-        //convertir en IplImage
-        IplImage  *imgIpl;
-        imgIpl = QImage2IplImage(&img);
+    //detection de visage
+    vector<CvRect> rects = detecter_zonesInteret(imgIpl, "../CodepoVision/cascade/haarcascade_frontalface_alt.xml");
+    if (rects.empty()) {
+        QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
+    } else {
+        CvRect r = rects.back();
+        QImage img_face = IplImage2QImage(imgIpl)->copy(r.x,r.y,r.width,r.height);
+        IplImage *imgIpl_face = QImage2IplImage(&img_face);
 
-        CvHaarClassifierCascade *cascade;
-        CvMemStorage			*storage;
+        //detection du nez
+        detecter_zonesInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_Nariz.xml");
+        //detection de la bouche
+        detecter_zonesInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_Mouth.xml");
+        //detection des yeux
+        detecter_zonesInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_mcs_lefteye.xml");
+        detecter_zonesInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_mcs_righteye.xml");
 
-        QString strFilename = "../CodepoVision/cascade/haarcascade_frontalface_alt.xml";
-        QByteArray ba = strFilename.toLatin1();
-        const char *filename = ba.data();
-        cascade = ( CvHaarClassifierCascade* )cvLoad( filename, 0, 0, 0 );
-        storage = cvCreateMemStorage( 0 );
-
-        //detection du visage
-        vector<CvRect> rects = detecter_visage( imgIpl, cascade,storage );
-
-        if (! rects.empty()){
-            CvRect r = rects.back();
-            QImage img_face = IplImage2QImage(imgIpl)->copy(r.x,r.y,r.width,r.height);
-
-            IplImage  *imgIpl_face;
-            imgIpl_face = QImage2IplImage(&img_face);
-
-
-
-            //detection du nez
-            detecter_ptInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_Nariz.xml");
-            //detection de la bouche
-            detecter_ptInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_Mouth.xml");
-            //detection des yeux
-            detecter_ptInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_mcs_lefteye.xml");
-            detecter_ptInteret( imgIpl_face, "../CodepoVision/cascade/haarcascade_mcs_righteye.xml");
-            afficher_image(IplImage2QImage(imgIpl_face));
-        } else {
-            QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
-        }
-
-
-}
-
-/**
- * @nom : detecter_ptInteret
- * @role : detecter les zones caractéristiques
- * @entrees : IplImage *img, QString strFilename
- * @sorties :
- */
-void CodepoVision::detecter_ptInteret(IplImage *img, QString strFilename)
-{
-    int i;
-
-    CvHaarClassifierCascade *cascade;
-    CvMemStorage			*storage;
-
-    QByteArray ba = strFilename.toLatin1();
-    const char *filename = ba.data();
-
-    cascade = ( CvHaarClassifierCascade* )cvLoad( filename, 0, 0, 0 );
-    storage = cvCreateMemStorage( 0 );
-
-    CvSeq *faces = cvHaarDetectObjects(img, cascade, storage, 1.2, 5, CV_HAAR_DO_CANNY_PRUNING, cvSize(40, 40));
-
-    for( i = 0 ; i < ( faces ? faces->total : 0 ) ; i++ ) {
-        CvRect *r = ( CvRect* )cvGetSeqElem( faces, i );
-        cvRectangle( img,
-                     cvPoint( r->x, r->y ),
-                     cvPoint( r->x + r->width, r->y + r->height ),
-                     CV_RGB( 255, 0, 0 ), 1, 8, 0 );
-        //cvCircle(img,  cvPoint( r->x, r->y ),2, CV_RGB( 255, 0, 0 ), 1, 8, 0 );
+        afficher_image(IplImage2QImage(imgIpl_face));
     }
-
-    //afficher_image(IplImage2QImage(img));
-
-    cvReleaseHaarClassifierCascade(&cascade);
-    cvReleaseMemStorage( &storage );
 }
+
 
 /**
  * @nom : on_button_detectFeatures_clicked()
@@ -327,14 +283,8 @@ void CodepoVision::detecter_ptInteret(IplImage *img, QString strFilename)
  */
 void CodepoVision::on_button_detectFeatures_clicked()
 {
-    //récuperer l'image de la fenetre active
-    QLabel *label = (QLabel *)_ui->mdiArea->currentSubWindow()->widget();
-    QImage img = label->pixmap()->toImage();
-    //convertir en IplImage
-    IplImage  *imgIpl;
-    imgIpl = QImage2IplImage(&img);
+    IplImage *imgIpl = currentImage();
     std::string modelFile = "../CodepoVision/data/grayall_asm.model";
-    //std::string picPath = "/home/danijiru/Images/index.jpeg";
     int verboseLevel = 0;
 
     StatModel::ASMModel asmModel;
@@ -345,62 +295,40 @@ void CodepoVision::on_button_detectFeatures_clicked()
 
 /**
  * @nom : searchAndFit
- * @role : detecter les points d'interet
+ * @role : detecter et afficher les points d'interet
  * @entrees : StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL
  * @sorties :
  */
 //! Run OpenCV object detection and do ASM fitting on each detected object.
-void CodepoVision::searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL) {
-    // Load image.
-
-    //cv::Mat img = imread("/home/danijiru/Images/emily.JPG");
-    //cv::Mat img = Mat(imageIpl,false)
+void CodepoVision::searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL)
+{
+    // Load image
     cv::Mat img = Mat(imageIpl->height, imageIpl->width, CV_8UC3);
     cv::Mat img4channels = cv::cvarrToMat(imageIpl);
-    cv::cvtColor(img4channels, img, CV_BGRA2BGR);
+    cv::cvtColor(img4channels, img, CV_BGRA2BGR);   //conversion ARGB (img4channels) vers RGB (img)
 
-    if (img.empty()) {
-        std::cerr << "Load image  failed." << endl;
-        exit(2);
-    }
-
-    // Face detection.
-    // Pourrait etre remplacée par celle qu'on a développé?
-    /*vector< cv::Rect > faces;
-    objCascadeClassfifier.detectMultiScale(
-        img, faces,
-        1.2, 2, CV_HAAR_SCALE_IMAGE, Size(60, 60) );*/
-
-    CvHaarClassifierCascade *cascade;
-    CvMemStorage			*storage;
-
-    QString strFilename = "../CodepoVision/cascade/haarcascade_frontalface_alt.xml";
-    QByteArray ba = strFilename.toLatin1();
-    const char *filename = ba.data();
-    cascade = (CvHaarClassifierCascade*)cvLoad(filename, 0, 0, 0);
-    storage = cvCreateMemStorage( 0 );
-
-    //detection du visage
-    vector<CvRect> rects = detecter_visage(imageIpl, cascade, storage);
-    if (! rects.empty()){
+    //detection de visage
+    vector<CvRect> rects = detecter_zonesInteret(imageIpl, "../CodepoVision/cascade/haarcascade_frontalface_alt.xml");
+    if (rects.empty()) {
+        QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
+    } else {
         CvRect r = rects.back();
         cv::Rect cvr = cv::Rect_<int>(r);
         vector< cv::Rect > faces;
-
         faces.push_back(cvr);
 
         // Fit to ASM!
         vector < StatModel::ASMFitResult > fitResult = asmModel.fitAll(img, faces, verboseL);
         cv::Mat ptsImg = asmModel.drawPoints(img, fitResult);
 
-        // Affichage des points d'intérêt
+        // conversion cv::Mat vers QImage et affichage des points d'intérêt
         cv::Mat temp(ptsImg.cols, ptsImg.rows, ptsImg.type());
         cvtColor(ptsImg, temp, CV_BGR2RGB);
         QImage qimg = QImage(temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
         afficher_image(&qimg);
-    }else
-          QMessageBox::warning(this, "Erreur", "Aucun visage detecté");
+    }
 }
+
 
 /**
  * @nom : on_actionQuitter_triggered()

@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <QMdiSubWindow>
+#include <QMessageBox>
 #include "asmmodel.h"
 
 namespace Ui {
@@ -21,10 +22,13 @@ class CodepoVision : public QMainWindow
 public:
 
     explicit CodepoVision(QWidget *parent = 0);
+    ~CodepoVision();
 
     void afficher_image(QImage *img);
 
-    ~CodepoVision();
+    QImage* IplImage2QImage(IplImage *iplImg);
+
+    void webcamClosed();
 
 private slots:
     void on_actionImporter_une_image_triggered();
@@ -37,8 +41,6 @@ private slots:
 
     void on_button_webcam_clicked();
 
-    void webcamClosed();
-
     void on_button_detectface_clicked();
 
     void on_button_detectFeatures_clicked();
@@ -50,15 +52,13 @@ private:
 
     void importer_image();
 
-    vector<CvRect> detecter_visage( IplImage *img,CvHaarClassifierCascade *cascade, CvMemStorage *storage );
-
-    QImage*  IplImage2QImage(IplImage *iplImg);
-
     IplImage* QImage2IplImage(QImage *qimg);
 
-    void searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL);
+    IplImage* currentImage();
 
-    void detecter_ptInteret(IplImage *img, QString strFilename);
+    vector<CvRect> detecter_zonesInteret(IplImage *img, QString strFilename);
+
+    void searchAndFit(StatModel::ASMModel & asmModel, IplImage* imageIpl, int verboseL);
 };
 
 #endif // CODEPOVISION_H
